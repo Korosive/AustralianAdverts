@@ -169,4 +169,27 @@ public class AdvertService {
 
         return success;
     }
+
+    //Delete advert by id
+    public HashMap<String, Object> deleteAdvertById(UUID advert_id) {
+        //Prepared SQL statement
+        String sql = "DELETE FROM adverts WHERE advert_id = ?";
+        //Response variable
+        HashMap<String, Object> response = new HashMap<>();
+
+        //Executing SQL statement and adding response
+        try {
+            jdbcTemplate.update(sql, advert_id);
+            response.put("success", true);
+            response.put("message", "Successfully deleted advert!");
+            log.info("Successfully deleted advert: " + advert_id);
+        } catch (DataAccessException exception) {
+            exception.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to delete advert!");
+            log.warn("Failed to delete advert: " + advert_id);
+        }
+
+        return response;
+    }
 }
