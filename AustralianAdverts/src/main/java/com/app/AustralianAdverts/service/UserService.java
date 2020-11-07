@@ -126,13 +126,16 @@ public class UserService {
             if (checkPassword(password, dbPassword)) {
                 response.put("success", true);
                 response.put("message", "Successfully logged in!");
+                log.info("Username and password match and login success.");
             } else {
                 response.put("success", false);
                 response.put("message", "Failed to login. Password does not match.");
+                log.warn("Password does not match in attempt to login");
             }
         } else {
            response.put("success", false);
            response.put("message", "Failed to login. Username either does not exist or is incorrect.");
+           log.warn("Username does not match in attempt to login");
         }
 
         return response;
@@ -141,5 +144,55 @@ public class UserService {
     //Method to check password
     private boolean checkPassword(String loginPassword, String dbPassword) {
         return BCrypt.checkpw(loginPassword, dbPassword);
+    }
+
+    //Method to get user by id
+    public HashMap<String, Object> getUserById(UUID user_id) {
+        //Response variable
+        HashMap<String, Object> response = new HashMap<>();
+        //SQL statement to get user data from database
+        String sql = "SELECT * FROM users WHERE user_id = ?";
+
+        try {
+            //Execute query for user
+            User dbUser = jdbcTemplate.queryForObject(sql, new Object[]{user_id}, new UserMapper());
+            //Populating response to successfully retrieving profile
+            response.put("success", true);
+            response.put("message", "Successfully retrieved profile.");
+            response.put("user", dbUser);
+            log.info("Successfully retrieved " + user_id.toString());
+        } catch (DataAccessException exception) {
+            //Populating response to failure of retrieving profile
+            exception.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to retrieve profile.");
+            log.warn("Failed to retrieve " + user_id.toString());
+        }
+
+        return response;
+    }
+
+    //Method to delete user from database with user id
+    public HashMap<String, Object> deleteUserById(UUID user_id) {
+        //Response variable
+        HashMap<String, Object> response = new HashMap<>();
+        //SQL statement to delete user with user id
+        String sql = "DELETE * FROM users WHERE user_id = ?";
+
+        try {
+            //Execute sql statement with id
+            jdbcTemplate.update(sql, user_id);
+            //Populating response to successfully deleted profile
+            response.put("success", true);
+            response.put("message", "Successfully deleted profile.");
+            log.info("Successfully deleted user: " + user_id.toString());
+        } catch (DataAccessException exception) {
+            //Populating response to failure of deleting profile
+            response.put("success", false);
+            response.put("message", "Failed to delete profile.");
+            log.warn("Failed to delete user: " + user_id.toString());
+        }
+
+        return response;
     }
 }
