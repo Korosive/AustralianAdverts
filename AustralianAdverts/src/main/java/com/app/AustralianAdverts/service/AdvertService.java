@@ -151,23 +151,26 @@ public class AdvertService {
     }
 
     //Updating the payment status of advert
-    public boolean updatePaid(UUID advert_id) {
+    public HashMap<String, Object> updatePaid(UUID advert_id) {
         //Success of update
-        boolean success = true;
+        HashMap<String, Object> response = new HashMap<>();
         //Prepared SQL statement
         String sql = "UPDATE adverts SET (paid = true) WHERE advert_id = ?";
 
         //Executing update
         try {
             jdbcTemplate.update(sql, advert_id);
+            response.put("success", true);
+            response.put("message", "Successfully paid for advert!");
             log.info("Updated the payment status of " + advert_id.toString());
         } catch (DataAccessException exception) {
             exception.printStackTrace();
-            success = false;
+            response.put("success", false);
+            response.put("message", "Failed to pay for advert!");
             log.info("Failed to update the payment status of " + advert_id.toString());
         }
 
-        return success;
+        return response;
     }
 
     //Delete advert by id
