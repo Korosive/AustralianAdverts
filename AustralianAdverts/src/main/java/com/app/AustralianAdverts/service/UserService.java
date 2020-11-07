@@ -105,4 +105,41 @@ public class UserService {
     private String encryptPassword(String plainPassword) {
         return BCrypt.hashpw(plainPassword, BCrypt.gensalt());
     }
+
+    //Method to login by checking database
+    public HashMap<String, Object> userLogin(User loginUser) {
+        //Response variable
+        HashMap<String, Object> response = new HashMap<>();
+        //Login details
+        String username = loginUser.getUsername();
+        String password = loginUser.getPassword();
+
+        //Checking username
+        if (!checkUsernameUnique(username)) {
+            //Prepared SQL statement to get user from database
+            String sql = "SELECT * FROM users WHERE username = ?";
+            //Executes SQL statement to get user
+            User dbUser = jdbcTemplate.queryForObject(sql, new Object[]{username}, new UserMapper());
+            //Gets password of user from database
+            String dbPassword = dbUser.getPassword();
+            //Checks if password from database is the same as login password
+            if (checkPassword(password, dbPassword)) {
+                response.put("success", true);
+                response.put("message", "Successfully logged in!");
+            } else {
+                response.put("success", false);
+                response.put("message", "Failed to login. Password does not match.");
+            }
+        } else {
+           response.put("success", false);
+           response.put("message", "Failed to login. Username either does not exist or is incorrect.");
+        }
+
+        return response;
+    }
+
+    //Method to check password
+    private boolean checkPassword(String loginPassword, String dbPassword) {
+        return BCrypt.checkpw(loginPassword, dbPassword);
+    }
 }
