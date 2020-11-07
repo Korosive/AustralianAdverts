@@ -195,4 +195,76 @@ public class UserService {
 
         return response;
     }
+
+    //Method to update user details in database
+    public HashMap<String, Object> updateUser(User updateUser) {
+        //Response variable
+        HashMap<String, Object> response = new HashMap<>();
+        //SQL statement
+        String sql = "UPDATE users (email, username, password) VALUES (?, ?, ?) WHERE user_id = ?";
+        //New user details entered by user
+        String email = updateUser.getEmail();
+        String username = updateUser.getUsername();
+        String password = updateUser.getPassword();
+        UUID user_id = updateUser.getUser_id();
+
+        try {
+            //Checks if new username is unique
+            if (checkUpdateEmail(email, user_id)) {
+                //Checks if new email is unique
+                if (checkUpdateUsername(username, user_id)) {
+                    //Executes SQL statement
+                    jdbcTemplate.update(sql, email, username, encryptPassword(password), user_id);
+                    //Populates response to successfully update
+                    response.put("success", true);
+                    response.put("message", "Successfully updated user details!");
+                } else {
+                    //Populates response to email not being unique
+                    response.put("success", false);
+                    response.put("message", "Email entered is already in use! Please try again.");
+                }
+            } else {
+                //Populates response to username not being unique
+                response.put("success", false);
+                response.put("message", "Username entered is already in use! Please try again.");
+            }
+        } catch (DataAccessException exception) {
+            exception.printStackTrace();
+            //Populates response to failure to update
+            response.put("success", false);
+            response.put("message", "Failed to update user details!");
+        }
+
+        return response;
+    }
+
+    //Checks if email is unique except for row with user_id parameter
+    private boolean checkUpdateEmail(String email, UUID user_id) {
+        String sql = "SELECT * FROM users WHERE email = ? EXCEPT (SELECT * FROM users WHERE user_id = ?)";
+        boolean unique;
+
+        try {
+            jdbcTemplate.query(sql, new Object[]{email, user_id}, new UserMapper());
+            unique = false;
+        } catch (DataAccessException exception) {
+            unique = true;
+        }
+
+        return unique;
+    }
+
+    //Checks if username is unique except for row with user_id parameter
+    private boolean checkUpdateUsername(String username, UUID user_id) {
+        String sql = "SELECT * FROM users WHERE username = ? EXCEPT (SELECT * FROM users WHERE user_id = ?)";
+        boolean unique;
+
+        try {
+            jdbcTemplate.query(sql, new Object[]{username, user_id}, new UserMapper());
+            unique = false;
+        } catch (DataAccessException exception) {
+            unique = true;
+        }
+
+        return unique;
+    }
 }

@@ -34,4 +34,9 @@ public class UserController {
     public HashMap<String, Object> deleteUser(@PathVariable UUID user_id) {
         return userService.deleteUserById(user_id);
     }
+
+    @PutMapping(path = "/update-user", consumes = "application/json", produces = "application/json")
+    public HashMap<String, Object> updateUser(@RequestBody User updateUser) {
+        return userService.updateUser(updateUser);
+    }
 }
