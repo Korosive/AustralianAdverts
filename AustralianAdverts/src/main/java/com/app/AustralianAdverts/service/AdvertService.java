@@ -104,7 +104,7 @@ public class AdvertService {
         //Creating list for adverts
         List<Advert> responseList = new ArrayList<>();
         //Prepared SQL statement
-        String sql = "SELECT * FROM adverts WHERE status = \"LIVE\" && start_date > ? ORDER BY date_created DESC";
+        String sql = "SELECT * FROM adverts WHERE status = \"LIVE\" AND start_date > ? ORDER BY date_created DESC";
         //Current date
         Date current_date = new Date();
         //Getting list of adverts created by a user
@@ -191,6 +191,27 @@ public class AdvertService {
             response.put("success", false);
             response.put("message", "Failed to delete advert!");
             log.warn("Failed to delete advert: " + advert_id);
+        }
+
+        return response;
+    }
+
+    //Change Status
+    public HashMap<String, Object> changeStatus(UUID advert_id, String status) {
+        HashMap<String, Object> response = new HashMap<>();
+
+        String sql = "UPDATE adverts (status) VALUES (?) WHERE advert_id = ?";
+
+        try {
+            jdbcTemplate.update(sql, status, advert_id);
+            response.put("success", true);
+            response.put("message", "Successfully changed advert to " + status + "!");
+            log.info("Successfully changed " + advert_id + " to " + status);
+        } catch (DataAccessException exception) {
+            exception.printStackTrace();
+            response.put("success", true);
+            response.put("message", "Failed to change advert to " + status + "!");
+            log.warn("Failed to change " + advert_id + " to " + status);
         }
 
         return response;

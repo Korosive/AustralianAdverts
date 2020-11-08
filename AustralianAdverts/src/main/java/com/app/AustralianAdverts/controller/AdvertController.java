@@ -50,4 +50,11 @@ public class AdvertController {
     public HashMap<String, Object> createAdvert(@RequestBody Advert newAdvert) {
         return advertService.createAdvert(newAdvert);
     }
+
+    @PutMapping(path = "/change-status", produces = "application/json")
+    public HashMap<String, Object> changeStatus(@RequestBody HashMap<String, Object> statusChange) {
+        UUID advert_id = (UUID) statusChange.get("advert_id");
+        String status = statusChange.get("status").toString();
+        return advertService.changeStatus(advert_id, status);
+    }
 }
