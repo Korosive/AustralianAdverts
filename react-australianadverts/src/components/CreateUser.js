@@ -1,5 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import {Redirect} from 'react-router-dom';
+import axios from 'axios';
 
 export class CreateUser extends Component {
 	constructor() {
@@ -38,9 +39,36 @@ export class CreateUser extends Component {
 		this.setState({retype: e.target.value});
 	}
 
+	handleCreateUser = (e) => {
+		if (this.state.password === this.state.retype) {
+			const newUser = {
+				email: this.state.email,
+				username: this.state.username,
+				password: this.state.password
+			};
+
+			axios.post("/create/user", newUser)
+				.then(response => {
+					const data = response.data;
+					if (data.success) {
+						return(<Redirect to="/login" />);
+					} else {
+						this.setState({error: data.message});
+					}
+				}).catch(error => {
+					this.setState({error: error.message});
+				});
+		}
+	}
+
 	render() {
 		return(
 			<Fragment>
+				{this.state.error &&
+					<div>
+						<p>{this.state.error}</p>
+					</div>
+				}
 				<form>
 					<h5>Create Account</h5>
 					<hr />
