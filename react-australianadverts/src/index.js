@@ -14,6 +14,7 @@ import Advert from './components/Advert';
 import UpdateAdvert from './components/UpdateAdvert';
 import DeleteUser from './components/DeleteUser';
 import PayAdvert from './components/PayAdvert';
+import Logout from './components/Logout';
 
 import reportWebVitals from './reportWebVitals';
 
@@ -33,6 +34,7 @@ const routing = (
 			<Route path="/update/advert/:advert_id" component={UpdateAdvert} />
 			<Route path="/update/user/:user_id" component{UpdateUser} />
 			<Route path="/pay/:advert_id" component={PayAdvert} />
+			<Route path="/logout" component={Logout} />
 		</Switch>
 	</BrowserRouter>
 );

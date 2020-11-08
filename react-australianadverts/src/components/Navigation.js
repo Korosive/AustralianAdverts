@@ -24,6 +24,7 @@ export class Navigation extends Component {
 		if (this.state.isLoggedIn) {
 			nav_accounts = (<Fragment>
 				<li><Link to={"/profile/" + this.state.user_id}>Profile</Link></li>
+				<li><Link to="/logout">Logout</Link></li>
 			</Fragment>);
 		} else {
 			nav_accounts = (<Fragment>
@@ -31,7 +32,6 @@ export class Navigation extends Component {
 				<li><Link to="/create/user">Create Account</Link></li>
 			</Fragment>);
 		}
-
 
 		return(
 			<Fragment>
