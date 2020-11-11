@@ -39,4 +39,9 @@ public class UserController {
     public HashMap<String, Object> updateUser(@RequestBody User updateUser) {
         return userService.updateUser(updateUser);
     }
+
+    @GetMapping(path = "/get/username/{user_id}", produces = "application/json")
+    public HashMap<String, String> getUsername(@PathVariable UUID user_id) {
+        return userService.getUsername(user_id);
+    }
 }

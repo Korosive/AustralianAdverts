@@ -267,4 +267,21 @@ public class UserService {
 
         return unique;
     }
+
+    //Gets username of user with user id
+    public HashMap<String, String> getUsername(UUID user_id) {
+        String sql = "SELECT username FROM users WHERE user_id = ?";
+        HashMap<String, String> response = new HashMap<>();
+
+        try {
+            User user = jdbcTemplate.queryForObject(sql, new Object[]{user_id}, new UserMapper());
+            String username = user.getUsername();
+            response.put("username", username);
+        } catch (DataAccessException exception) {
+            exception.printStackTrace();
+            response.put("error", "Error.");
+        }
+
+        return response;
+    }
 }
