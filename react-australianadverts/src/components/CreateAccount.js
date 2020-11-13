@@ -90,7 +90,7 @@ export default class CreateAccount extends Component {
 			<Fragment>
 				{this.renderError()}
 				<form className="m-5">
-					<h1>Create Account</h1>
+					<h1 className="text-center">Create Account</h1>
 					<hr />
 					<div className="form-group row">
 						<label htmlFor="inputEmail" className="col-sm-2 col-form-label">Email:</label>
