@@ -1,9 +1,7 @@
 import React, {Component, Fragment} from 'react';
 import axios from 'axios';
-import {Link} from 'react-router-dom';
-import cookie from 'react-cookies';
 
-export class Home extends Component {
+export default class Home extends Component {
 	constructor() {
 		super();
 		this.state = {adverts: []};
@@ -29,7 +27,7 @@ export class Home extends Component {
 		if (this.state.adverts) {
 			listAdverts = <Fragment>
 				<div className="accordion" id="advertAccordion">
-					{this.state.adverts.map((advert, i) =>
+					{this.state.adverts.map((advert, i) => {
 						<Fragment>
 							<div class="card">
 								<div className="card-header" id={"title" + i}>
@@ -47,39 +45,51 @@ export class Home extends Component {
 								</div>
 							</div>
 						</Fragment>
-					}
+					})}
 				</div>
-			</Fragment>);
+			</Fragment>
 		} else {
-			if (this.state.error) {
-				if (this.state.error === "empty") {
-					errorMsg = <Fragment>
-						<div className="alert alert-danger" role="alert">
-							<p>No adverts available</p>
-						</div>
-					</Fragment>;
-				}
-
-				if (this.state.error === "error") {
-					errorMsg = <Fragment>
-						<div className="alert alert-danger" role="alert">
-							<p>Error in retrieving adverts! Please try again!</p>
-						</div>
-					</Fragment>;
-				}
-			}
+			listAdverts = <Fragment>
+				<p>No adverts Sadge</p>
+			</Fragment>
 		}
 
 		return listAdverts;
+	}
+
+	renderError() {
+		var message;
+		if (this.state.error) {
+			if (this.state.error === "empty") {
+				message = <div className="alert alert-danger alert-dismissible fade show m-2" role="alert">
+					No adverts available!
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    					<span aria-hidden="true">&times;</span>
+  					</button>
+				</div>
+			}
+
+			if (this.state.error === "error") {
+				message = <div className="alert alert-danger alert-dismissible fade show m-2" role="alert">
+					Error in retrieving adverts!
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    					<span aria-hidden="true">&times;</span>
+  					</button>
+				</div>
+			}
+		}
+		return message;
 	}
 
 	render() {
 		return(
 			<Fragment>
 				{this.renderError()}
-				<h1>Australian Adverts Board</h1>
-				<hr />
-				{this.renderAdverts()}
+				<div className="m-5">
+					<h1 className="text-center">Australian Adverts Board</h1>
+					<hr />
+					{this.renderAdverts()}
+				</div>
 			</Fragment>
 		);
 	}

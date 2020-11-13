@@ -3,12 +3,14 @@ import axios from 'axios';
 import cookie from 'react-cookies';
 import {Redirect} from 'react-router-dom';
 
-export class Login extends Component {
+export default class Login extends Component {
 	constructor() {
 		super();
 		this.state = {username: '', password: ''};
 		this.handleUsernameInput = this.handleUsernameInput.bind(this);
 		this.handlePasswordInput = this.handlePasswordInput.bind(this);
+		this.handleLogin = this.handleLogin.bind(this);
+		this.renderError = this.renderError.bind(this);
 	}
 
 	componentDidMount() {
@@ -65,9 +67,9 @@ export class Login extends Component {
 		return(
 			<Fragment>
 				{this.renderError()}
-				<h1>Login</h1>
-				<hr />
-				<form>
+				<form className="m-5">
+					<h1 className="text-center">Login</h1>
+					<hr />
 					<div className="form-group row">
 						<label htmlFor="inputUsername" className="col-sm-2 col-form-label">Username:</label>
 						<div className="col-sm-10">
@@ -75,7 +77,7 @@ export class Login extends Component {
 								className="form-control" 
 								id="inputUsername"
 								value={this.state.username}
-								onChange={this.handleUsernameChange}>
+								onChange={this.handleUsernameChange} />
 						</div>
 					</div>
 					<div className="form-group row">
@@ -85,7 +87,7 @@ export class Login extends Component {
 								className="form-control" 
 								id="inputPassword"
 								value={this.state.password}
-								onChange={this.handlePasswordChange}>
+								onChange={this.handlePasswordChange} />
 						</div>
 					</div>
 					<input type="submit" value="Login" onClick={this.handleLogin} />

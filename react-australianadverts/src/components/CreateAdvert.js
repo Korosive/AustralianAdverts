@@ -3,7 +3,7 @@ import cookie from 'react-cookies';
 import axios from 'axios';
 import {Redirect} from 'react-router-dom';
 
-export class CreateAdvert extends Component {
+export default class CreateAdvert extends Component {
 	constructor() {
 		super();
 		this.state = {title: '', 
@@ -62,7 +62,7 @@ export class CreateAdvert extends Component {
 						status: true,
 						message: data.message
 					}
-				}});
+				}}/>);
 			} else {
 				this.setState({
 					fail: true,
@@ -138,26 +138,37 @@ export class CreateAdvert extends Component {
 
 	renderContact() {
 		var contactInput;
-		const method = this.state.primary_contact_method;
-		if (method === "WEBSITE" || method="PHONE") {
+		const contact_method = this.state.primary_contact_method;
+		if (contact_method === "WEBSITE" || contact_method === "PHONE") {
 			contactInput = <Fragment>
 				<div className="form-group row">
-					<label htmlFor="inpContactInfo" className="col-sm-2 col-form-label">Primary Contact Information:</Label>
+					<label htmlFor="inpContactInfo" className="col-sm-2 col-form-label">Primary Contact Information:</label>
 					<div className="col-sm-10">
 						<input type="text" 
 							className="form-control" 
 							id="inpContactInfo"
 							value={this.state.primary_contact_info}
 							onChange={this.handleContactInfo}>
-						</textarea>
+						</input>
 					</div>
 				</div>
 			</Fragment>
-		} else if (method === "EMAIL") {
+		} else if (contact_method === "EMAIL") {
 			contactInput = <Fragment>
-
+				<div className="form-group row">
+					<label htmlFor="inpContactInfo" className="col-sm-2 col-form-label">Primary Contact Information:</label>
+					<div className="col-sm-10">
+						<input type="email" 
+							className="form-control" 
+							id="inpContactInfo"
+							value={this.state.primary_contact_info}
+							onChange={this.handleContactInfo}>
+						</input>
+					</div>
+				</div>
 			</Fragment>
 		}
+		return contactInput;
 	}
 
 	render() {
@@ -168,17 +179,17 @@ export class CreateAdvert extends Component {
 				<hr/>
 				<form>
 					<div className="form-group row">
-						<label htmlFor="inpTitle" className="col-sm-2 col-form-label">Email:</Label>
+						<label htmlFor="inpTitle" className="col-sm-2 col-form-label">Email:</label>
 						<div className="col-sm-10">
 							<input type="text" 
 								className="form-control" 
 								id="inpTitle"
 								value={this.state.title}
-								onChange={this.handleTitleChange}>
+								onChange={this.handleTitleChange} />
 						</div>
 					</div>
 					<div className="form-group row">
-						<label htmlFor="inpDescription" className="col-sm-2 col-form-label">Description:</Label>
+						<label htmlFor="inpDescription" className="col-sm-2 col-form-label">Description:</label>
 						<div className="col-sm-10">
 							<textarea className="form-control" 
 								id="inpDescription"

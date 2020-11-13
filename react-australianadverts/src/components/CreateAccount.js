@@ -3,14 +3,20 @@ import axios from 'axios';
 import {Redirect} from 'react-router-dom';
 import cookie from 'react-cookies';
 
-export class CreateAccount extends Component {
+export default class CreateAccount extends Component {
 	constructor() {
 		super();
 		this.state = {email: '', username: '', password: '', retype: ''};
+		this.handleEmailChange = this.handleEmailChange.bind(this);
+		this.handleUsernameChange = this.handleUsernameChange.bind(this);
+		this.handlePasswordChange = this.handlePasswordChange.bind(this);
+		this.handleRetypeChange = this.handleRetypeChange.bind(this);
+		this.handleCreateAccount = this.handleCreateAccount.bind(this);
+		this.renderError = this.renderError.bind(this);
 	}
 
 	componentDidMount() {
-		if (cookie.loaded("isLoggedIn")) {
+		if (cookie.load("isLoggedIn")) {
 			window.history.back();
 		}
 	}
@@ -65,12 +71,27 @@ export class CreateAccount extends Component {
 		}
 	}
 
+	renderError() {
+		console.log("hello");
+		var message;
+		if (this.state.errorMsg) {
+			message = <div className="alert alert-danger alert-dismissible fade show m-2" role="alert">
+				{this.state.errorMsg}
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    				<span aria-hidden="true">&times;</span>
+  				</button>
+			</div>
+		}
+		return message;
+	}
+
 	render() {
 		return(
 			<Fragment>
-				<h1>Create Account</h1>
-				<hr />
-				<form>
+				{this.renderError()}
+				<form className="m-5">
+					<h1>Create Account</h1>
+					<hr />
 					<div className="form-group row">
 						<label htmlFor="inputEmail" className="col-sm-2 col-form-label">Email:</label>
 						<div className="col-sm-10">
@@ -78,7 +99,7 @@ export class CreateAccount extends Component {
 								className="form-control" 
 								id="inputEmail"
 								value={this.state.email}
-								onChange={this.handleEmailChange}>
+								onChange={this.handleEmailChange}/>
 						</div>
 					</div>
 					<div className="form-group row">
@@ -88,7 +109,7 @@ export class CreateAccount extends Component {
 								className="form-control" 
 								id="inputUsername"
 								value={this.state.username}
-								onChange={this.handleUsernameChange}>
+								onChange={this.handleUsernameChange}/>
 						</div>
 					</div>
 					<div className="form-group row">
@@ -98,7 +119,7 @@ export class CreateAccount extends Component {
 								className="form-control" 
 								id="inputEmail"
 								value={this.state.password}
-								onChange={this.handlePasswordChange}>
+								onChange={this.handlePasswordChange}/>
 						</div>
 					</div>
 					<div className="form-group row">
@@ -108,7 +129,7 @@ export class CreateAccount extends Component {
 								className="form-control" 
 								id="inputRetype"
 								value={this.state.retype}
-								onChange={this.handleRetypeChange}>
+								onChange={this.handleRetypeChange}/>
 						</div>
 					</div>
 					<div className="form-group row">

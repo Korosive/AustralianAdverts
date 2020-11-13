@@ -1,14 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Home from './components/Home';
 import Login from './components/Login';
 import CreateAccount from './components/CreateAccount';
+import CreateAdvert from './components/CreateAdvert';
 import reportWebVitals from './reportWebVitals';
 
 const routing = (
-	<BrowserRouter>
+	<Router>
 		<Navigation />
 		<Switch>
 			<Route exact path="/" component={Home} />
@@ -16,7 +17,7 @@ const routing = (
 			<Route exact path="/create-account" component={CreateAccount} />
 			<Route exact path="/create-advert" component={CreateAdvert} />
 		</Switch>
-	</BrowserRouter>
+	</Router>
 );
 
 ReactDOM.render(routing, document.getElementById('root'));
