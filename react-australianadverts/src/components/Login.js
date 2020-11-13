@@ -28,40 +28,66 @@ export class Login extends Component {
 	}
 
 	handleLogin = (e) => {
-		const data_login = {
+		e.preventDefault();
+		axios.post("/user/login", {
 			username: this.state.username,
 			password: this.state.password
-		};
-
-		axios.post("/user/login", data_login)
-			.then(response => {
-				const data = response.data;
+		}).then(response => {
+			const data = response.data;
+			if (data.success) {
 				cookie.save("isLoggedIn", true);
 				cookie.save("username", this.state.username);
 				cookie.save("user_id", data.user_id);
-				if (data.success) {
-					return(<Redirect to={"/profile/" + user_id}/>);
-				} else {
-					this.setState({error: data.message});
-				}
-			}).catch(error => {
-				const msg = error.message;
-				this.setState({error: msg});
-			});
+				return(<Redirect to="/"/>);
+			} else {
+				this.setState({error: data.message});
+			}
+		}).catch(error => {
+			const msg = error.message;
+			this.setState({error: msg});
+		});
+	}
+
+	renderError() {
+		if (this.state.error) {
+			return(<Fragment>
+				<div className="alert alert-danger alert-dismissible fade show" role="alert">
+  					<p>You should check in on some of those fields below.</p>
+  					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    				<span aria-hidden="true">&times;</span>
+  					</button>
+				</div>
+			</Fragment>);
+		}
 	}
 
 	render() {
 		return(
 			<Fragment>
+				{this.renderError()}
+				<h1>Login</h1>
+				<hr />
 				<form>
-					{this.state.error && 
-						<div>
-							<h1>{this.state.error}</h1>
+					<div className="form-group row">
+						<label htmlFor="inputUsername" className="col-sm-2 col-form-label">Username:</label>
+						<div className="col-sm-10">
+							<input type="text" 
+								className="form-control" 
+								id="inputUsername"
+								value={this.state.username}
+								onChange={this.handleUsernameChange}>
 						</div>
-					}
-					<h1>Login</h1>
-					<input type="text" placeholder="Username" onChange={this.handleUsernameInput} />
-					<input type="password" placeholder="Password" onChange={this.handlePasswordInput} />
+					</div>
+					<div className="form-group row">
+						<label htmlFor="inputPassword" className="col-sm-2 col-form-label">Password:</label>
+						<div className="col-sm-10">
+							<input type="password" 
+								className="form-control" 
+								id="inputPassword"
+								value={this.state.password}
+								onChange={this.handlePasswordChange}>
+						</div>
+					</div>
 					<input type="submit" value="Login" onClick={this.handleLogin} />
 				</form>
 			</Fragment>

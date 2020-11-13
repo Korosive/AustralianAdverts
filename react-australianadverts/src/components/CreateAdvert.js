@@ -1,25 +1,25 @@
 import React, {Component, Fragment} from 'react';
-import axios from 'axios';
 import cookie from 'react-cookies';
+import axios from 'axios';
 import {Redirect} from 'react-router-dom';
 
 export class CreateAdvert extends Component {
 	constructor() {
 		super();
-		var today = new Date();
-		var dd = String(today.getDate()).padStart(2, '0');
-		var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-		var yyyy = today.getFullYear();
-
-		today = yyyy + "-" + mm + "-" + dd;
-		this.state = {currentDate: today, user_id: '', title: '', description: '', start_date: '', end_date: '', payment: ''};
-
+		this.state = {title: '', 
+			description: '', 
+			primary_contact_method: '', 
+			primary_contact_info: ''
+		};
+		this.handleTitleChange = this.handleTitleChange.bind(this);
+		this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
+		this.handleStartChange = this.handleStartChange.bind(this);
+		this.handleEndChange = this.handleEndChange.bind(this);
+		this.handlePaymentChange = this.handlePaymentChange.bind(this);
 	}
 
 	componentDidMount() {
-		if (cookie.load("isLoggedIn")) {
-			this.setState({user_id: cookie.load("user_id")});
-		} else {
+		if (!cookie.load("isLoggedIn")) {
 			return(<Redirect to="/login" />);
 		}
 	}
@@ -34,68 +34,216 @@ export class CreateAdvert extends Component {
 		this.setState({description: e.target.value});
 	}
 
-	handleStartChange = (e) => {
+	handleContactMethod = (e) => {
 		e.preventDefault();
-		this.setState({start_date: e.target.value});
+		this.setState({primary_contact_method: e.target.value});
 	}
 
-	handleEndDate = (e) => {
+	handleContactInfo = (e) => {
 		e.preventDefault();
-		this.setState({end_date: e.target.value});
+		this.setState({primary_contact_info: e.target.value});
 	}
 
-	handlePriceChange = (e) => {
-		e.preventDefault();
-		this.setState({payment: e.target.value});
-	}
 
-	handleReview = (e) => {
+	handleCreate = (e) => {
 		e.preventDefault();
-		const destination = {
-			pathname: "/review-advert",
-			state: {
-				referrer: "/create-advert",
-				advert: {
-					user_id: cookie.load("user_id"),
-					title: this.state.title,
-					description: this.state.description,
-					start_date: this.state.start_date,
-					end_date: this.state.end_date,
-					payment: this.state.payment
-				}
+		axios.post("/adverts/create-advert", {
+			user_id: cookie.load("user_id"),
+			title: this.state.title,
+			description: this.state.description,
+			primary_contact_method: this.state.primary_contact_method,
+			primary_contact_info: this.state.primary_contact_info
+		}).then(response => {
+			const data = response.data;
+			if (data.success) {
+				return(<Redirect to={{
+					pathname: "/",
+					state: {
+						status: true,
+						message: data.message
+					}
+				}});
+			} else {
+				this.setState({
+					fail: true,
+					fail_message: data.message
+				});
 			}
+		})
+	}
+
+	handleOnCheck = (e) => {
+		e.preventDefault();
+		this.setState({primary_contact_method: e.target.value});
+		var inpWebsite = document.getElementById("contactSite");
+		var inpEmail = document.getElementById("contactEmail");
+		var inpPhone = document.getElementById("contactPhone");
+		switch(e.target.value) {
+			case "WEBSITE":
+				if (inpWebsite.hasAttribute("readonly")) {
+					inpWebsite.removeAttribute("readonly");
+				}
+				
+				if (!inpEmail.hasAttribute("readonly")) {
+					inpEmail.setAttribute("readonly");
+				}
+
+				if (!inpPhone.hasAttribute("readonly")) {
+					inpPhone.setAttribute("readonly");
+				}
+				break;
+			case "EMAIL":
+				if (inpEmail.hasAttribute("readonly")) {
+					inpEmail.removeAttribute("readonly");
+				}
+
+				if (!inpWebsite.hasAttribute("readonly")) {
+					inpWebsite.setAttribute("readonly");
+				}
+
+				if (!inpPhone.hasAttribute("readonly")) {
+					inpPhone.setAttribute("readonly");
+				}
+				
+				break;
+			case "PHONE":
+				if (inpPhone.hasAttribute("readonly")) {
+					inpPhone.removeAttribute("readonly");
+				}
+
+				if (!inpWebsite.hasAttribute("readonly")) {
+					inpWebsite.setAttribute("readonly");
+				}
+
+				if (!inpEmail.hasAttribute("readonly")) {
+					inpEmail.setAttribute("readonly");
+				}
 		}
-		return(<Redirect from="/create-advert" to={destination} />);
+	}
+
+	renderFail() {
+		var message;
+		if (this.state.fail) {
+			message = <Fragment>
+				<div className="alert alert-warning alert-dismissible fade show" role="alert">
+  					<p>{this.state.fail_message}</p>
+  					<button type="button" className="close" data-dismiss="alert" aria-label="Close">
+    					<span aria-hidden="true">&times;</span>
+  					</button>
+				</div>
+			</Fragment>
+		}
+		return message;
+	}
+
+	renderContact() {
+		var contactInput;
+		const method = this.state.primary_contact_method;
+		if (method === "WEBSITE" || method="PHONE") {
+			contactInput = <Fragment>
+				<div className="form-group row">
+					<label htmlFor="inpContactInfo" className="col-sm-2 col-form-label">Primary Contact Information:</Label>
+					<div className="col-sm-10">
+						<input type="text" 
+							className="form-control" 
+							id="inpContactInfo"
+							value={this.state.primary_contact_info}
+							onChange={this.handleContactInfo}>
+						</textarea>
+					</div>
+				</div>
+			</Fragment>
+		} else if (method === "EMAIL") {
+			contactInput = <Fragment>
+
+			</Fragment>
+		}
 	}
 
 	render() {
 		return(
 			<Fragment>
+			 	{this.renderFail()}
+				<h1>Create Advert</h1>
+				<hr/>
 				<form>
-					<h5>Create Advert</h5>
-					<input type="text" 
-						placeholder="Title" 
-						value={this.state.title}
-						onChange={this.handleTitleChange} />
-					<textarea placeholder="Description" 
-						value={this.state.description}
-						onChange={this.handleDescriptionChange} />
-					<input type="date"
-						min={this.state.currentDate}
-						value={this.state.start_date}
-						onChange={this.handleStartChange} />
-					<input type="date"
-						min={this.state.start_date}
-						value={this.state.end_date}
-						onChange={this.handleEndDate} />
-					<input type="number" 
-						value={this.state.payment}
-						step="0.01"
-						min="0" 
-						onChange={this.handlePriceChange} />
-					<input type="submit"
-						value="Proceed with advert"
-						onClick={this.handleReview} />
+					<div className="form-group row">
+						<label htmlFor="inpTitle" className="col-sm-2 col-form-label">Email:</Label>
+						<div className="col-sm-10">
+							<input type="text" 
+								className="form-control" 
+								id="inpTitle"
+								value={this.state.title}
+								onChange={this.handleTitleChange}>
+						</div>
+					</div>
+					<div className="form-group row">
+						<label htmlFor="inpDescription" className="col-sm-2 col-form-label">Description:</Label>
+						<div className="col-sm-10">
+							<textarea className="form-control" 
+								id="inpDescription"
+								value={this.state.description}
+								onChange={this.handleDescriptionChange}>
+							</textarea>
+						</div>
+					</div>
+					<fieldset className="form-group">
+						<div className="row">
+							<legend className="col-form-label col-sm-2 pt-0">Primary Contact Method:</legend>
+							<div className="col-sm-10">
+								<div className="form-check">
+									<input className="form-check-input" 
+										type="radio" 
+										name="gridRadios" 
+										id="radioWebsite"
+										onChange={this.handleOnCheck}
+										value="WEBSITE"
+										checked/>
+									<label className="form-check-label" htmlFor="radioWebsite">Website</label>
+									<input type="url"
+										className="form-check-input"
+										id="contactSite"
+										readonly
+										value={this.state.contact_site}
+										onChange={this.handleContactSite}/>
+								</div>
+								<div className="form-check">
+									<input className="form-check-input" 
+										type="radio" 
+										name="gridRadios" 
+										id="radioEmail"  
+										onChange={this.handleOnCheck}
+										value="EMAIL" />
+									<label className="form-check-label" htmlFor="radioWebsite">Email:</label>
+									<input type="email"
+										className="form-check-input"
+										id="contactEmail"
+										readonly
+										value={this.state.contact_email}
+										onChange={this.handleContactEmail} />
+								</div>
+								<div className="form-check">
+									<input className="form-check-input" 
+										type="radio" 
+										name="gridRadios" 
+										id="radioPhone"  
+										onChange={this.handleOnCheck}
+										value="PHONE" />
+									<label className="form-check-label" htmlFor="radioWebsite">Phone</label>
+									<input type="text"
+										className="form-check-input"
+										id="contactPhone"
+										readonly
+										value={this.state.contact_phone}
+										onChange={this.handleContactPhone} />
+								</div>
+							</div>
+						</div>
+					</fieldset>
+					
+					<button type="submit" className="btn btn-primary" onClick={this.handleCreate}>
+						Create Advert
+					</button>
 				</form>
 			</Fragment>
 		);

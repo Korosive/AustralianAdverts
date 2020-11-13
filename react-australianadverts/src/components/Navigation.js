@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
-import {Link} from 'react-router-dom';
 import cookie from 'react-cookies';
+import {Link} from 'react-router-dom';
 
 export class Navigation extends Component {
 	constructor() {
@@ -8,39 +8,59 @@ export class Navigation extends Component {
 		this.state = {isLoggedIn: false};
 	}
 
-	//Upon loading, navigation will check cookies if logged in
 	componentDidMount() {
-		if (cookie.load('isLoggedIn')) {
-			this.setState({
-				isLoggedIn: true,
-				user_id: cookie.load('user_id')
-			});
+		if (cookie.load("isLoggedIn")) {
+			this.setState({isLoggedIn: true,});
 		}
 	}
 
-	render() {
-		var nav_accounts;
-
+	renderNavLogin() {
+		var nav_loggedin;
 		if (this.state.isLoggedIn) {
-			nav_accounts = (<Fragment>
-				<li><Link to={"/profile/" + this.state.user_id}>Profile</Link></li>
-				<li><Link to="/logout">Logout</Link></li>
-			</Fragment>);
+			nav_loggedin = <Fragment>
+				<li className="nav-item">
+					<Link to="/create-advert">Create Advert</Link>
+				</li>
+			</Fragment>
 		} else {
-			nav_accounts = (<Fragment>
-				<li><Link to="/login">Login</Link></li>
-				<li><Link to="/create/user">Create Account</Link></li>
-			</Fragment>);
+			nav_loggedin = <Fragment>
+				<li className="nav-item">
+					<Link to="/login" className="nav-link">
+						Login
+					</Link>
+				</li>
+				<li className="nav-item">
+					<Link to="/create-account" className="nav-link">
+						Create Account
+					</Link>
+				</li>
+			</Fragment>
 		}
 
+		return nav_loggedin;
+	}
+
+	render() {
 		return(
 			<Fragment>
-				<nav>
-					<ul>
-						<li><Link to="/">Home</Link></li>
-						{nav_accounts}
-					</ul>
+				<nav className="navbar navbar-expand-lg navbar-light bg-light">
+					<Link className="navbar-brand" to="/">Australian Adverts Board</Link>
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+    					<span class="navbar-toggler-icon"></span>
+ 					</button>
+
+ 					<div className="collapse navbar-collapse" id="navbarContent">
+ 						<ul className"navbar-nav mr-auto">
+ 							<li className="nav-item">
+								<Link to="/" className="nav-link">
+									Home
+								</Link>
+							</li>
+							{this.renderNavLogin()}
+ 						</ul>
+ 					</div>
 				</nav>
+
 			</Fragment>
 		);
 	}

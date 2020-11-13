@@ -15,12 +15,9 @@ public class AdvertMapper implements RowMapper<Advert> {
                 resultSet.getObject("user_id", UUID.class),
                 resultSet.getString("title"),
                 resultSet.getString("description"),
-                resultSet.getDate("start_date"),
-                resultSet.getDate("end_date"),
                 resultSet.getDate("date_created"),
-                resultSet.getString("status"),
-                resultSet.getDouble("payment"),
-                resultSet.getBoolean("paid")
+                resultSet.getString("primary_contact_method"),
+                resultSet.getString("primary_contact_info")
         );
     }
 }
