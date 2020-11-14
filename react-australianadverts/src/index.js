@@ -6,6 +6,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import CreateAccount from './components/CreateAccount';
 import CreateAdvert from './components/CreateAdvert';
+import Logout from './components/Logout';
 import reportWebVitals from './reportWebVitals';
 
 const routing = (
@@ -16,6 +17,7 @@ const routing = (
 			<Route exact strict path="/login" component={Login} />
 			<Route exact strict path="/create-account" component={CreateAccount} />
 			<Route exact strict path="/create-advert" component={CreateAdvert} />
+			<Route exact strict path="/logout" component={Logout} />
 		</Switch>
 	</Router>
 );

@@ -18,6 +18,7 @@ export default class Login extends Component {
 		if (cookie.load("isLoggedIn")) {
 			window.history.back();
 		}
+		document.title = "Login";
 	}
 
 	handleUsernameChange = (e) => {
@@ -38,14 +39,18 @@ export default class Login extends Component {
 		}).then(response => {
 			const data = response.data;
 			if (data.success) {
+				if (cookie.load("logout")) {
+					cookie.remove("logout");
+				}
 				cookie.save("isLoggedIn", true);
 				cookie.save("username", this.state.username);
 				cookie.save("user_id", data.user_id);
-				window.location.reload();
+				cookie.save("just_logged_in", true);
 				this.setState({
 					success: true,
 					message: data.message
 				});
+				window.location.reload();
 			} else {
 				this.setState({error: data.message});
 			}
@@ -93,6 +98,7 @@ export default class Login extends Component {
 			};
 			return <Redirect to={destination}/>;
 		}
+
 		return(
 			<Fragment>
 				{this.renderCreateAccount()}

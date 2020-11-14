@@ -13,6 +13,10 @@ export default class Navigation extends Component {
 		if (cookie.load("isLoggedIn")) {
 			this.setState({isLoggedIn: true});
 		}
+
+		if (cookie.load("logout")) {
+			this.setState({isLoggedIn: false});
+		}
 	}
 
 	renderNavLogin() {
