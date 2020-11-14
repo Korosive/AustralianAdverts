@@ -41,6 +41,7 @@ export default class Login extends Component {
 				cookie.save("isLoggedIn", true);
 				cookie.save("username", this.state.username);
 				cookie.save("user_id", data.user_id);
+				window.location.reload();
 				this.setState({
 					success: true,
 					message: data.message

@@ -104,7 +104,6 @@ export default class CreateAdvert extends Component {
 				if (!inpPhone.hasAttribute("readonly")) {
 					inpPhone.setAttribute("readonly");
 				}
-				
 				break;
 			case "PHONE":
 				if (inpPhone.hasAttribute("readonly")) {
@@ -118,6 +117,12 @@ export default class CreateAdvert extends Component {
 				if (!inpEmail.hasAttribute("readonly")) {
 					inpEmail.setAttribute("readonly");
 				}
+				break;
+			default:
+				inpPhone.setAttribute("readonly");
+				inpWebsite.setAttribute("readonly");
+				inpEmail.setAttribute("readonly");
+				break;
 		}
 	}
 

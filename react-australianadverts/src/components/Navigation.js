@@ -22,6 +22,9 @@ export default class Navigation extends Component {
 				<li className="nav-item">
 					<Link to="/create-advert" className="nav-link">Create Advert</Link>
 				</li>
+				<li className="nav-item">
+					<Link to="/logout" className="nav-link">Logout</Link>
+				</li>
 			</Fragment>
 		} else {
 			nav_loggedin = <Fragment>

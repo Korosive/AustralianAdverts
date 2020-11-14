@@ -8,6 +8,7 @@ export default class Home extends Component {
 		this.renderAdverts = this.renderAdverts.bind(this);
 		this.renderError = this.renderError.bind(this);
 		this.renderEmpty = this.renderEmpty.bind(this);
+		this.renderLogout = this.renderLogout.bind(this);
 	}
 
 	componentDidMount() {
@@ -83,9 +84,31 @@ export default class Home extends Component {
 		return message;
 	}
 
+	renderLogout() {
+		var message;
+		if (cookie.load("logout")) {
+			message = <div className="alert alert-success alert-dismissible fade show m-2" role="alert">
+				Successfully logged out!
+				<button type="button" className="close" data-dismiss="alert" aria-label="Close">
+    				<span aria-hidden="true">&times;</span>
+  				</button>
+			</div>
+		}
+
+		if (cookie.load("invalid")) {
+			message = <div className="alert alert-danger alert-dismissible fade show m-2" role="alert">
+				Unable to logout!
+				<button type="button" className="close" data-dismiss="alert" aria-label="Close">
+    				<span aria-hidden="true">&times;</span>
+  				</button>
+			</div>
+		}
+	}
+
 	render() {
 		return(
 			<Fragment>
+				{this.renderLogout()}
 				{this.renderError()}
 				<div className="m-5">
 					<h1 className="text-center">Australian Adverts Board</h1>
