@@ -19,7 +19,7 @@ public class UserController {
         return userService.createAccount(newUser);
     }
 
-    @GetMapping(path = "/login", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/login", consumes = "application/json", produces = "application/json")
     public HashMap<String, Object> login(@RequestBody User loginUser) {
         return userService.userLogin(loginUser);
     }

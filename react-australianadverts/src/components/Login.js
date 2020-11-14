@@ -7,8 +7,8 @@ export default class Login extends Component {
 	constructor() {
 		super();
 		this.state = {username: '', password: ''};
-		this.handleUsernameInput = this.handleUsernameInput.bind(this);
-		this.handlePasswordInput = this.handlePasswordInput.bind(this);
+		this.handleUsernameChange = this.handleUsernameChange.bind(this);
+		this.handlePasswordChange = this.handlePasswordChange.bind(this);
 		this.handleLogin = this.handleLogin.bind(this);
 		this.renderError = this.renderError.bind(this);
 		this.renderCreateAccount = this.renderCreateAccount.bind(this);
@@ -20,19 +20,19 @@ export default class Login extends Component {
 		}
 	}
 
-	handleUsernameInput = (e) => {
+	handleUsernameChange = (e) => {
 		e.preventDefault();
 		this.setState({username: e.target.value});
 	}
 
-	handlePasswordInput = (e) => {
+	handlePasswordChange = (e) => {
 		e.preventDefault();
 		this.setState({password: e.target.value});
 	}
 
 	handleLogin = (e) => {
 		e.preventDefault();
-		axios.post("/user/login", {
+		axios.post("/users/login", {
 			username: this.state.username,
 			password: this.state.password
 		}).then(response => {
@@ -49,16 +49,15 @@ export default class Login extends Component {
 				this.setState({error: data.message});
 			}
 		}).catch(error => {
-			const msg = error.message;
-			this.setState({error: msg});
+			this.setState({error: error.message});
 		});
 	}
 
 	renderError = () => {
 		if (this.state.error) {
 			return(<Fragment>
-				<div className="alert alert-danger alert-dismissible fade show" role="alert">
-  					You should check in on some of those fields below.
+				<div className="alert alert-danger alert-dismissible fade show m-5" role="alert">
+  					{this.state.error}
   					<button type="button" className="close" data-dismiss="alert" aria-label="Close">
     					<span aria-hidden="true">&times;</span>
   					</button>
@@ -69,16 +68,16 @@ export default class Login extends Component {
 
 	renderCreateAccount = () => {
 		if (cookie.load("success")) {
-			var createAlert = (<Fragment>
-				<div className="alert alert-danger alert-dismissible fade show" role="alert">
+			var message = <Fragment>
+				<div className="alert alert-danger alert-dismissible fade show m-5" role="alert">
   					{cookie.load("success")}
   					<button type="button" className="close" data-dismiss="alert" aria-label="Close">
     					<span aria-hidden="true">&times;</span>
   					</button>
 				</div>
-			</Fragment>);
+			</Fragment>
 			cookie.remove("success");
-			return(createAlert);
+			return(message);
 		}
 	}
 

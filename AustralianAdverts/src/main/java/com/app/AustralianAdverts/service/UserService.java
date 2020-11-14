@@ -68,7 +68,7 @@ public class UserService {
     }
 
     private boolean checkUsernameExists(String username) {
-        String sql = "SELECT user_id FROM users WHERE username = ?";
+        String sql = "SELECT * FROM users WHERE username = ?";
         boolean success;
 
         try {
