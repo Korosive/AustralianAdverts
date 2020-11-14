@@ -19,7 +19,7 @@ export default class Navigation extends Component {
 		var nav_loggedin;
 		if (this.state.isLoggedIn) {
 			nav_loggedin = <Fragment>
-				<li>
+				<li className="nav-item">
 					<Link to="/create-advert" className="nav-link">Create Advert</Link>
 				</li>
 			</Fragment>
@@ -28,7 +28,7 @@ export default class Navigation extends Component {
 				<li className="nav-item">
 					<Link to="/login" className="nav-link">Login</Link>
 				</li>
-				<li>
+				<li className="nav-item"> 
 					<Link to="/create-account" className="nav-link">Create Account</Link>
 				</li>
 			</Fragment>

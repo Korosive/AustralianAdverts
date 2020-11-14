@@ -12,10 +12,10 @@ const routing = (
 	<Router>
 		<Navigation />
 		<Switch>
-			<Route exact path="/" component={Home} />
-			<Route exact path="/login" component={Login} />
-			<Route exact path="/create-account" component={CreateAccount} />
-			<Route exact path="/create-advert" component={CreateAdvert} />
+			<Route exact strict path="/" component={Home} />
+			<Route exact strict path="/login" component={Login} />
+			<Route exact strict path="/create-account" component={CreateAccount} />
+			<Route exact strict path="/create-advert" component={CreateAdvert} />
 		</Switch>
 	</Router>
 );

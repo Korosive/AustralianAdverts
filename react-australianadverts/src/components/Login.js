@@ -11,6 +11,7 @@ export default class Login extends Component {
 		this.handlePasswordInput = this.handlePasswordInput.bind(this);
 		this.handleLogin = this.handleLogin.bind(this);
 		this.renderError = this.renderError.bind(this);
+		this.renderCreateAccount = this.renderCreateAccount.bind(this);
 	}
 
 	componentDidMount() {
@@ -40,7 +41,10 @@ export default class Login extends Component {
 				cookie.save("isLoggedIn", true);
 				cookie.save("username", this.state.username);
 				cookie.save("user_id", data.user_id);
-				return(<Redirect to="/"/>);
+				this.setState({
+					success: true,
+					message: data.message
+				});
 			} else {
 				this.setState({error: data.message});
 			}
@@ -50,22 +54,48 @@ export default class Login extends Component {
 		});
 	}
 
-	renderError() {
+	renderError = () => {
 		if (this.state.error) {
 			return(<Fragment>
 				<div className="alert alert-danger alert-dismissible fade show" role="alert">
-  					<p>You should check in on some of those fields below.</p>
-  					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    				<span aria-hidden="true">&times;</span>
+  					You should check in on some of those fields below.
+  					<button type="button" className="close" data-dismiss="alert" aria-label="Close">
+    					<span aria-hidden="true">&times;</span>
   					</button>
 				</div>
 			</Fragment>);
 		}
 	}
 
+	renderCreateAccount = () => {
+		if (cookie.load("success")) {
+			var createAlert = (<Fragment>
+				<div className="alert alert-danger alert-dismissible fade show" role="alert">
+  					{cookie.load("success")}
+  					<button type="button" className="close" data-dismiss="alert" aria-label="Close">
+    					<span aria-hidden="true">&times;</span>
+  					</button>
+				</div>
+			</Fragment>);
+			cookie.remove("success");
+			return(createAlert);
+		}
+	}
+
 	render() {
+		if (this.state.success) {
+			const destination = {
+				pathname: "/",
+				state: {
+					success: true,
+					message: this.state.message
+				}
+			};
+			return <Redirect to={destination}/>;
+		}
 		return(
 			<Fragment>
+				{this.renderCreateAccount()}
 				{this.renderError()}
 				<form className="m-5">
 					<h1 className="text-center">Login</h1>

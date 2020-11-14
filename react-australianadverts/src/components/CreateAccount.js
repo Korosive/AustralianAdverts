@@ -16,6 +16,7 @@ export default class CreateAccount extends Component {
 	}
 
 	componentDidMount() {
+		document.title = "Create Account";
 		if (cookie.load("isLoggedIn")) {
 			window.history.back();
 		}
@@ -56,7 +57,11 @@ export default class CreateAccount extends Component {
 				}).then(response => {
 					const data = response.data;
 					if (data.success) {
-						return(<Redirect to="/" />);
+						this.setState({
+							success: true,
+							message: data.message
+						});
+						cookie.save("success", "Successfully created account!");
 					} else {
 						this.setState({errorMsg: data.message});
 					}
@@ -72,12 +77,11 @@ export default class CreateAccount extends Component {
 	}
 
 	renderError() {
-		console.log("hello");
 		var message;
 		if (this.state.errorMsg) {
 			message = <div className="alert alert-danger alert-dismissible fade show m-2" role="alert">
 				{this.state.errorMsg}
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<button type="button" className="close" data-dismiss="alert" aria-label="Close">
     				<span aria-hidden="true">&times;</span>
   				</button>
 			</div>
@@ -86,6 +90,16 @@ export default class CreateAccount extends Component {
 	}
 
 	render() {
+		if (this.state.success) {
+			const destination = {
+				pathname: "/login",
+				state: {
+					success: true,
+					message: this.state.message
+				}
+			};
+			return <Redirect to={destination}/>;
+		}
 		return(
 			<Fragment>
 				{this.renderError()}
@@ -113,11 +127,11 @@ export default class CreateAccount extends Component {
 						</div>
 					</div>
 					<div className="form-group row">
-						<label htmlFor="inputPassword" className="col-sm-2 col-form-label">Username:</label>
+						<label htmlFor="inputPassword" className="col-sm-2 col-form-label">Password:</label>
 						<div className="col-sm-10">
 							<input type="password" 
 								className="form-control" 
-								id="inputEmail"
+								id="inputPassword"
 								value={this.state.password}
 								onChange={this.handlePasswordChange}/>
 						</div>

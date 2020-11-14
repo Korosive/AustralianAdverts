@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,75 +28,78 @@ public class UserService {
         //Response variable
         HashMap<String, Object> response = new HashMap<>();
         //Prepared SQL statement
-        String sql = "INSERT INTO adverts (user_id, email, username, password, date_created) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (user_id, email, username, password, date_created) VALUES (?, ?, ?, ?, ?)";
         //New user data
         String email = newUser.getEmail();
         String username = newUser.getUsername();
         String password = newUser.getPassword();
 
-        //Called method to check if email is unique/not already in database
-        if (checkEmailUnique(email)) {
-            //Called method to check if username is unique/not already in database
-            if (checkUsernameUnique(username)) {
-                try {
-                    //Encrypting password with method
-                    String encryptedPassword = encryptPassword(password);
-                    //Generating UUID and current date
-                    UUID user_id = UUID.randomUUID();
-                    Date date_created = new Date();
-                    //Execute SQL statement
-                    jdbcTemplate.update(sql, user_id, email, encryptedPassword, date_created);
-                    //Populating response to success
-                    response.put("success", true);
-                    response.put("message", "Successfully created a new account!");
-                    log.info("Successfully created a new account: " + username);
-                } catch (DataAccessException exception) {
-                    //Print error
-                    exception.printStackTrace();
-                    //Populating response to failure
-                    response.put("success", false);
-                    response.put("message", "Failed to create a new account! Please try again.");
-                    log.warn("Failed to create a new account: " + username);
-                }
-            } else {
-                //Populating response to non-unique email
-                response.put("success", false);
-                response.put("message", "Email is already associated with an account! Please login with the account associated with this email or use a new email.");
-                log.warn("Failed to create a new account because email already in use.");
-            }
-        } else {
+        if (checkEmailExists(email)) {
             //Populating response to non-unique username
             response.put("success", false);
-            response.put("message", "Username is already in use! Please login with the account associated with this username or use a new username.");
-            log.warn("Failed to create a new account because username already in use.");
+            response.put("message", "Account already exists with email.");
+            log.warn("Failed to create a new account because email already in use.");
+        } else if (checkUsernameExists(username)) {
+            //Populating response to non-unique username
+            response.put("success", false);
+            response.put("message", "Account already exists with email.");
+            log.warn("Failed to create a new account because email already in use.");
+        } else {
+            try {
+                //Encrypting password with method
+                String encryptedPassword = encryptPassword(password);
+                //Execute SQL statement
+                jdbcTemplate.update(sql, UUID.randomUUID(), email, username, encryptedPassword, new Date());
+                //Populating response to success
+                response.put("success", true);
+                response.put("message", "Successfully created a new account!");
+                log.info("Successfully created a new account: " + username);
+            } catch (DataAccessException exception) {
+                //Print error
+                exception.printStackTrace();
+                //Populating response to failure
+                response.put("success", false);
+                response.put("message", "Failed to create a new account! Please try again.");
+                log.warn("Failed to create a new account: " + username);
+            }
         }
 
         return response;
     }
 
-    //Method to check if email is in database
-    private boolean checkEmailUnique(String email) {
-        String sql = "SELECT user_id FROM users WHERE email = ?";
-        boolean success = false;
+    private boolean checkUsernameExists(String username) {
+        String sql = "SELECT user_id FROM users WHERE username = ?";
+        boolean success;
 
         try {
-            jdbcTemplate.query(sql, new Object[]{email}, new UserMapper());
+            List<User> listUser = jdbcTemplate.query(sql, new Object[]{username}, new UserMapper());
+            if (listUser.size() == 0) {
+                success = false;
+            } else {
+                success = true;
+            }
         } catch (DataAccessException exception) {
-            success = true;
+            success = false;
+            log.warn("Username does not exist");
         }
 
         return success;
     }
 
-    //Method to check if username is in database
-    private boolean checkUsernameUnique(String username) {
-        String sql = "SELECT user_id FROM users WHERE username = ?";
-        boolean success = false;
+    private boolean checkEmailExists(String email) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        boolean success;
 
         try {
-            jdbcTemplate.query(sql, new Object[]{username}, new UserMapper());
+            List<User> listUser = jdbcTemplate.query(sql, new Object[]{email}, new UserMapper());
+            if (listUser.size() == 0) {
+                success = false;
+            } else {
+                success = true;
+            }
         } catch (DataAccessException exception) {
-            success = true;
+            success = false;
+            log.warn("Email does not exist");
         }
 
         return success;
@@ -115,7 +119,7 @@ public class UserService {
         String password = loginUser.getPassword();
 
         //Checking username
-        if (!checkUsernameUnique(username)) {
+        if (checkUsernameExists(username)) {
             //Prepared SQL statement to get user from database
             String sql = "SELECT * FROM users WHERE username = ?";
             //Executes SQL statement to get user
