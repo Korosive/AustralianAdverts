@@ -8,14 +8,15 @@ export default class CreateAdvert extends Component {
 		super();
 		this.state = {title: '', 
 			description: '', 
-			primary_contact_method: '', 
-			primary_contact_info: ''
+			primary_contact_method: '',
+			primary_contact_info: '',
+			selected_method: 'WEBSITE'
 		};
 		this.handleTitleChange = this.handleTitleChange.bind(this);
 		this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
-		this.handleStartChange = this.handleStartChange.bind(this);
-		this.handleEndChange = this.handleEndChange.bind(this);
-		this.handlePaymentChange = this.handlePaymentChange.bind(this);
+		this.handleContactMethod = this.handleContactMethod.bind(this);
+		this.handleContactInfo = this.handleContactInfo.bind(this);
+		this.renderFail = this.renderFail.bind(this);
 	}
 
 	componentDidMount() {
@@ -37,6 +38,7 @@ export default class CreateAdvert extends Component {
 	handleContactMethod = (e) => {
 		e.preventDefault();
 		this.setState({primary_contact_method: e.target.value});
+		console.log(e.target.value);
 	}
 
 	handleContactInfo = (e) => {
@@ -51,18 +53,12 @@ export default class CreateAdvert extends Component {
 			user_id: cookie.load("user_id"),
 			title: this.state.title,
 			description: this.state.description,
-			primary_contact_method: this.state.primary_contact_method,
+			primary_contact_method: this.state.selected_method,
 			primary_contact_info: this.state.primary_contact_info
 		}).then(response => {
 			const data = response.data;
 			if (data.success) {
-				return(<Redirect to={{
-					pathname: "/",
-					state: {
-						status: true,
-						message: data.message
-					}
-				}}/>);
+				this.setState({success: true, message: data.message});
 			} else {
 				this.setState({
 					fail: true,
@@ -72,58 +68,9 @@ export default class CreateAdvert extends Component {
 		})
 	}
 
-	handleOnCheck = (e) => {
+	onChangeRadio = (e) => {
 		e.preventDefault();
-		this.setState({primary_contact_method: e.target.value});
-		var inpWebsite = document.getElementById("contactSite");
-		var inpEmail = document.getElementById("contactEmail");
-		var inpPhone = document.getElementById("contactPhone");
-		switch(e.target.value) {
-			case "WEBSITE":
-				if (inpWebsite.hasAttribute("readonly")) {
-					inpWebsite.removeAttribute("readonly");
-				}
-				
-				if (!inpEmail.hasAttribute("readonly")) {
-					inpEmail.setAttribute("readonly");
-				}
-
-				if (!inpPhone.hasAttribute("readonly")) {
-					inpPhone.setAttribute("readonly");
-				}
-				break;
-			case "EMAIL":
-				if (inpEmail.hasAttribute("readonly")) {
-					inpEmail.removeAttribute("readonly");
-				}
-
-				if (!inpWebsite.hasAttribute("readonly")) {
-					inpWebsite.setAttribute("readonly");
-				}
-
-				if (!inpPhone.hasAttribute("readonly")) {
-					inpPhone.setAttribute("readonly");
-				}
-				break;
-			case "PHONE":
-				if (inpPhone.hasAttribute("readonly")) {
-					inpPhone.removeAttribute("readonly");
-				}
-
-				if (!inpWebsite.hasAttribute("readonly")) {
-					inpWebsite.setAttribute("readonly");
-				}
-
-				if (!inpEmail.hasAttribute("readonly")) {
-					inpEmail.setAttribute("readonly");
-				}
-				break;
-			default:
-				inpPhone.setAttribute("readonly");
-				inpWebsite.setAttribute("readonly");
-				inpEmail.setAttribute("readonly");
-				break;
-		}
+		this.setState({selected_method: e.target.value});
 	}
 
 	renderFail() {
@@ -177,90 +124,82 @@ export default class CreateAdvert extends Component {
 	}
 
 	render() {
+		if (this.state.success) {
+			return(<Redirect to="/" />);
+		}
+
 		return(
 			<Fragment>
-			 	{this.renderFail()}
-				<h1>Create Advert</h1>
-				<hr/>
-				<form>
-					<div className="form-group row">
-						<label htmlFor="inpTitle" className="col-sm-2 col-form-label">Email:</label>
-						<div className="col-sm-10">
-							<input type="text" 
-								className="form-control" 
-								id="inpTitle"
-								value={this.state.title}
-								onChange={this.handleTitleChange} />
-						</div>
-					</div>
-					<div className="form-group row">
-						<label htmlFor="inpDescription" className="col-sm-2 col-form-label">Description:</label>
-						<div className="col-sm-10">
-							<textarea className="form-control" 
-								id="inpDescription"
-								value={this.state.description}
-								onChange={this.handleDescriptionChange}>
-							</textarea>
-						</div>
-					</div>
-					<fieldset className="form-group">
-						<div className="row">
-							<legend className="col-form-label col-sm-2 pt-0">Primary Contact Method:</legend>
+				<div className="m-5">
+			 		{this.renderFail()}
+					<h1 className="text-center">Create Advert</h1>
+					<hr/>
+					<form>
+						<div className="form-group row">
+							<label htmlFor="inpTitle" className="col-sm-2 col-form-label">Title:</label>
 							<div className="col-sm-10">
-								<div className="form-check">
-									<input className="form-check-input" 
-										type="radio" 
-										name="gridRadios" 
-										id="radioWebsite"
-										onChange={this.handleOnCheck}
-										value="WEBSITE"
-										checked/>
-									<label className="form-check-label" htmlFor="radioWebsite">Website</label>
-									<input type="url"
-										className="form-check-input"
-										id="contactSite"
-										readonly
-										value={this.state.contact_site}
-										onChange={this.handleContactSite}/>
-								</div>
-								<div className="form-check">
-									<input className="form-check-input" 
-										type="radio" 
-										name="gridRadios" 
-										id="radioEmail"  
-										onChange={this.handleOnCheck}
-										value="EMAIL" />
-									<label className="form-check-label" htmlFor="radioWebsite">Email:</label>
-									<input type="email"
-										className="form-check-input"
-										id="contactEmail"
-										readonly
-										value={this.state.contact_email}
-										onChange={this.handleContactEmail} />
-								</div>
-								<div className="form-check">
-									<input className="form-check-input" 
-										type="radio" 
-										name="gridRadios" 
-										id="radioPhone"  
-										onChange={this.handleOnCheck}
-										value="PHONE" />
-									<label className="form-check-label" htmlFor="radioWebsite">Phone</label>
-									<input type="text"
-										className="form-check-input"
-										id="contactPhone"
-										readonly
-										value={this.state.contact_phone}
-										onChange={this.handleContactPhone} />
-								</div>
+								<input type="text" 
+									className="form-control" 
+									id="inpTitle"
+									value={this.state.title}
+									onChange={this.handleTitleChange} />
 							</div>
 						</div>
-					</fieldset>
-					
-					<button type="submit" className="btn btn-primary" onClick={this.handleCreate}>
-						Create Advert
-					</button>
-				</form>
+						<div className="form-group row">
+							<label htmlFor="inpDescription" className="col-sm-2 col-form-label">Description:</label>
+							<div className="col-sm-10">
+								<textarea className="form-control" 
+									id="inpDescription"
+									value={this.state.description}
+									onChange={this.handleDescriptionChange}>
+								</textarea>
+							</div>
+						</div>
+						<fieldset className="form-group">
+							<div className="row">
+								<legend className="col-form-label col-sm-2 pt-0">Primary Contact Method:</legend>
+								<div className="col-sm-10" onChange={this.onChangeRadio}>
+									<div className="form-check">
+										<input className="form-check-input" 
+											type="radio" 
+											name="gridRadios" 
+											id="radioWebsite"
+											value="WEBSITE"/>
+										<label className="form-check-label" htmlFor="radioWebsite">Website</label>
+									</div>
+									<div className="form-check">
+										<input className="form-check-input" 
+											type="radio" 
+											name="gridRadios" 
+											id="radioEmail"  
+											value="EMAIL" />
+										<label className="form-check-label" htmlFor="radioWebsite">Email</label>
+									</div>
+									<div className="form-check">
+										<input className="form-check-input" 
+											type="radio" 
+											name="gridRadios" 
+											id="radioPhone"  
+											value="PHONE" />
+										<label className="form-check-label" htmlFor="radioWebsite">Phone</label>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+						<div className="form-group row">
+							<label htmlFor="inpContactInfo" className="col-sm-2 col-form-label">Primary Contact Info:</label>
+							<div className="col-sm-10">
+								<input className="form-control" 
+									id="inpContactInfo"
+									value={this.state.primary_contact_info}
+									onChange={this.handleContactInfo} />
+							</div>
+						</div>
+						<button type="submit" className="btn btn-primary" onClick={this.handleCreate}>
+							Create Advert
+						</button>
+					</form>
+				</div>
 			</Fragment>
 		);
 	}

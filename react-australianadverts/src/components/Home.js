@@ -1,4 +1,7 @@
 import React, {Component, Fragment} from 'react';
+import Accordion from 'react-bootstrap/Accordion';
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
 import cookie from 'react-cookies';
 import axios from 'axios';
 
@@ -6,9 +9,7 @@ export default class Home extends Component {
 	constructor() {
 		super();
 		this.state = {adverts: []};
-		this.renderAdverts = this.renderAdverts.bind(this);
 		this.renderError = this.renderError.bind(this);
-		this.renderEmpty = this.renderEmpty.bind(this);
 		this.renderLogout = this.renderLogout.bind(this);
 		this.renderLogin = this.renderLogin.bind(this);
 	}
@@ -17,6 +18,7 @@ export default class Home extends Component {
 		document.title = "Australian Adverts";
 		axios.get("/adverts/get/adverts")
 		.then(response => {
+			console.log(response);
 			const data = response.data;
 			if (Array.isArray(data) && data.length) {
 				this.setState({adverts:data});
@@ -44,37 +46,6 @@ export default class Home extends Component {
 		}
 	}
 
-	renderAdverts() {
-		var listAdverts;
-		if (this.state.adverts) {
-			listAdverts = <Fragment>
-				<div className="accordion" id="advertAccordion">
-					{this.state.adverts.map((advert, i) => {
-						<Fragment>
-							<div className="card">
-								<div className="card-header" id={"title" + i}>
-									<h2 className="mb-0">
-										<button className="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target={"#collapse" + i} aria-expanded="true" aria-controls={"collpase" + i}>
-											{advert.title}
-										</button>
-									</h2>
-								</div>
-							</div>
-							<div id={"collapse" + i} className="collapse show" aria-labelledby={"title" + i} data-parent="#advertAccordion">
-								<div className="card-body">
-									<p>{advert.description}</p>
-									<p>Primary Contact: {advert.primary_contact_info} ({advert.primary_contact_method})</p>
-								</div>
-							</div>
-						</Fragment>
-					})}
-				</div>
-			</Fragment>
-		}
-
-		return listAdverts;
-	}
-
 	renderError() {
 		var message;
 		if (this.state.error) {
@@ -87,17 +58,6 @@ export default class Home extends Component {
 				</div>
 			}
 		}
-		return message;
-	}
-
-	renderEmpty() {
-		var message;
-		if (this.state.error) {
-			if (this.state.error === "empty") {
-				message = <p>No adverts Sadge</p>
-			}
-		}
-
 		return message;
 	}
 
@@ -145,8 +105,23 @@ export default class Home extends Component {
 				<div className="m-5">
 					<h1 className="text-center">Australian Adverts Board</h1>
 					<hr />
-					{this.renderEmpty()}
-					{this.renderAdverts()}
+					<Accordion defaultActiveKey="0">
+						{this.state.adverts.map((advert) => 
+							<Card>
+								<Card.Header>
+									<Accordion.Toggle as={Button} variant="link" eventKey="0">
+										{advert.title}
+									</Accordion.Toggle>
+								</Card.Header>
+								<Accordion.Collapse eventKey="0">
+									<Card.Body>
+										<p>{advert.description}</p>
+										<p>Primary Contact: {advert.primary_contact_info} ({advert.primary_contact_method})</p>
+									</Card.Body>
+								</Accordion.Collapse>
+							</Card>
+						)}
+					</Accordion>
 				</div>
 			</Fragment>
 		);

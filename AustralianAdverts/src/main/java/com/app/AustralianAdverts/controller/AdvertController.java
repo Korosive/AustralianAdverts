@@ -2,6 +2,8 @@ package com.app.AustralianAdverts.controller;
 
 import com.app.AustralianAdverts.model.Advert;
 import com.app.AustralianAdverts.service.AdvertService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +15,8 @@ public class AdvertController {
 
     @Autowired
     private AdvertService advertService;
+
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @GetMapping(path = "/get/adverts", produces = "application/json")
     public List<Advert> getAdverts() {

@@ -129,6 +129,7 @@ public class UserService {
             //Checks if password from database is the same as login password
             if (checkPassword(password, dbPassword)) {
                 response.put("success", true);
+                response.put("user_id", dbUser.getUser_id());
                 response.put("message", "Successfully logged in!");
                 log.info("Username and password match and login success.");
             } else {
